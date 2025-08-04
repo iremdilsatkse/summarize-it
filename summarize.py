@@ -12,96 +12,93 @@ model = genai.GenerativeModel("gemini-2.0-flash")
 
 def summarize_text(text):
     prompt = f"""
-    Your task: Condense a video transcript into a captivating and informative 250-word summary that highlights key points and engages viewers.
+Aşağıdaki video transkriptine göre, maksimum 250 kelimelik Türkçe bir özet oluştur. Yalnızca özet metni üret. Selamlama, açıklama veya sohbet dili kullanma.
 
-    IMPORTANT: Always write the summary in Turkish, even if the transcript is in another language.
-
-    Guidelines:
-        Focus on essential information: Prioritize the video's core messages, condensing them into point-wise sections.
-        Maintain clarity and conciseness: Craft your summary using accessible language, ensuring it's easily understood by a broad audience.
-        Capture the essence of the video: Go beyond mere listings. Integrate key insights and interesting aspects to create a narrative that draws readers in.
-        Word count: Aim for a maximum of 250 words.
-
-    Input:
-        The provided video transcript will be your content source.
-
-    Video Transcript:
-    {text}
-    """
+Transkript:
+{text}
+"""
     response = model.generate_content(prompt)
-    return response.text
+    return response.text.strip()
 
 
 # 2. Zaman Kodlu Önemli Noktalar (Highlights)
 def generate_highlights(transcript):
     prompt = f"""
-    Aşağıdaki video transkriptini incele ve bu videonun en önemli 5 anını belirle. Her önemli an için zaman kodu ve kısa açıklama ver.
+Aşağıdaki transkripti analiz et. En önemli 5 anı belirle. Her biri için zaman kodu ve kısa açıklama ver. Giriş cümlesi veya sohbet dili kullanma. Sadece çıktıyı aşağıdaki formatta ver:
 
-    Format:
-    🔹 [00:MM:SS] Açıklama
+[00:MM:SS] Açıklama
 
-    Transkript:
-    {transcript}
-    """
+Transkript:
+{transcript}
+"""
     response = model.generate_content(prompt)
-    return response.text
+    return response.text.strip()
 
 
 # 3. Quiz Soru-Cevap Oluşturma
 def generate_quiz(summary):
     prompt = f"""
-    Aşağıdaki video özetine göre 3 çoktan seçmeli soru oluştur.
-    Her soru için:
-    - 1 doğru, 3 yanlış seçenek ver.
-    - Doğru cevabı belirt.
-    - Cevap için kısa açıklama yaz.
+Aşağıdaki özet metnine göre 3 çoktan seçmeli soru üret. Her soru için:
 
-    Video Özeti:
-    {summary}
-    """
+- 1 doğru, 3 yanlış seçenek
+- Doğru cevabı açıkça belirt
+- Cevap için kısa bir açıklama yaz
+
+Giriş cümleleri veya açıklayıcı ifadeler kullanma. Yalnızca soru ve cevap içeriğini üret.
+
+Özet:
+{summary}
+"""
     response = model.generate_content(prompt)
-    return response.text
+    return response.text.strip()
 
 
 # 4. Konu Haritası (Concept Map)
 def generate_concept_map(summary):
     prompt = f"""
-    Aşağıdaki video özetine göre kavramları ve ilişkilerini çıkar.
-    - Kavramları madde madde sırala
-    - Aralarındaki bağlantıyı açıkla
+Aşağıdaki özet metnine göre kavramları ve ilişkilerini çıkar. Aşağıdaki gibi yap:
 
-    Video Özeti:
-    {summary}
-    """
+- Kavramları madde madde sırala
+- Her kavramın altına diğer kavramlarla ilişkisini kısa cümlelerle açıkla
+- Giriş cümlesi veya açıklama yazma
+
+Özet:
+{summary}
+"""
     response = model.generate_content(prompt)
-    return response.text
+    return response.text.strip()
 
 
 # 5. Ders Notu Formatında Özet
 def generate_lecture_notes(transcript):
     prompt = f"""
-    Aşağıdaki video transkriptini, ders notu formatında özetle.
-    Yapı: 📌 Başlıklar → kısa açıklamalar → maddeler.
+Aşağıdaki video transkriptini ders notu formatında özetle. Format şu şekilde olsun:
 
-    Transkript:
-    {transcript}
-    """
+📌 Başlık  
+- Kısa açıklama  
+- İlgili maddeler (bullet list)
+
+Sadece içerik üret, açıklayıcı cümle veya selamlamalar ekleme.
+
+Transkript:
+{transcript}
+"""
     response = model.generate_content(prompt)
-    return response.text
+    return response.text.strip()
 
 
 # 6. Kullanıcı Geri Bildirimiyle Geliştirilmiş Özet
 def improve_summary(summary, feedback_type):
     prompt = f"""
-    Mevcut özet:
-    {summary}
+Aşağıdaki özeti, verilen geri bildirim doğrultusunda yeniden oluştur. Selamlama veya açıklayıcı metin kullanma. Sadece özet çıktısını ver.
 
-    Kullanıcı geri bildirimi: {feedback_type}
+Özgün Özet:
+{summary}
 
-    Lütfen bu geri bildirime göre özetin yeni bir versiyonunu oluştur.
-    """
+Geri Bildirim Türü: {feedback_type}
+"""
     response = model.generate_content(prompt)
-    return response.text
+    return response.text.strip()
 
 
 # CLI test için:
