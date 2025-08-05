@@ -1,6 +1,8 @@
 import google.generativeai as genai
 import os
 from dotenv import load_dotenv
+import json
+import re
 
 load_dotenv()
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
@@ -8,8 +10,6 @@ genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 model = genai.GenerativeModel("gemini-2.0-flash")
 
 # 1. Temel özetleme
-
-
 def summarize_text(text):
     prompt = f"""
 Aşağıdaki video transkriptine göre, maksimum 250 kelimelik Türkçe bir özet oluştur. Yalnızca özet metni üret. Selamlama, açıklama veya sohbet dili kullanma.
@@ -38,35 +38,41 @@ Transkript:
 # 3. Quiz Soru-Cevap Oluşturma
 def generate_quiz(summary):
     prompt = f"""
-Aşağıdaki özet metnine göre 3 çoktan seçmeli soru üret. Her soru için:
+Aşağıdaki özet metnine göre 3 çoktan seçmeli soru üret. Her soru için aşağıdaki JSON formatını **yalnızca** kullan:
 
-- 1 doğru, 3 yanlış seçenek
-- Doğru cevabı açıkça belirt
-- Cevap için kısa bir açıklama yaz
+[
+  {{
+    "question": "Soru metni",
+    "options": {{
+      "A": "Seçenek A",
+      "B": "Seçenek B",
+      "C": "Seçenek C",
+      "D": "Seçenek D"
+    }},
+    "correct_answer": "A",
+    "explanation": "Neden doğru olduğunu açıkla."
+  }},
+  ...
+]
 
-Giriş cümleleri veya açıklayıcı ifadeler kullanma. Yalnızca soru ve cevap içeriğini üret.
-
-Özet:
-{summary}
-"""
-    response = model.generate_content(prompt)
-    return response.text.strip()
-
-
-# 4. Konu Haritası (Concept Map)
-def generate_concept_map(summary):
-    prompt = f"""
-Aşağıdaki özet metnine göre kavramları ve ilişkilerini çıkar. Aşağıdaki gibi yap:
-
-- Kavramları madde madde sırala
-- Her kavramın altına diğer kavramlarla ilişkisini kısa cümlelerle açıkla
-- Giriş cümlesi veya açıklama yazma
+**UYARI: Sadece geçerli JSON döndür. Açıklama, giriş veya başka bir şey ekleme.**
 
 Özet:
 {summary}
 """
     response = model.generate_content(prompt)
-    return response.text.strip()
+    text = response.text.strip()
+    # JSON array'i ayıkla
+    match = re.search(r'(\[\s*{.*}\s*\])', text, re.DOTALL)
+    if match:
+        json_text = match.group(1)
+    else:
+        json_text = text
+    try:
+        return json.loads(json_text)
+    except Exception as e:
+        print("Quiz formatı çözümlenemedi:", e)
+        return {"error": "Quiz JSON formatı hatalı", "raw": response.text}
 
 
 # 5. Ders Notu Formatında Özet
@@ -112,7 +118,6 @@ if __name__ == "__main__":
 
         print("\n⏱️ Önemli Noktalar:\n", generate_highlights(transcript))
         print("\n🎓 Quiz:\n", generate_quiz(summary))
-        print("\n🧠 Konu Haritası:\n", generate_concept_map(summary))
         print("\n📚 Ders Notları:\n", generate_lecture_notes(transcript))
 
         feedback = input(
