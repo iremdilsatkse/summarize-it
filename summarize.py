@@ -1,3 +1,16 @@
+"""
+summarize.py
+
+Bu modül, YouTube videolarının transkriptlerinden çeşitli çıktılar üretmek için Google Gemini API'sini kullanır. 
+Üretilen çıktılar:
+- Başlık ve özet
+- Öne çıkan anlar (highlight)
+- Çoktan seçmeli quiz
+- Özet geliştirme (geri bildirimle)
+
+Tüm çıktılar Türkçe olarak oluşturulur.
+"""
+
 import google.generativeai as genai
 import os
 from dotenv import load_dotenv
@@ -9,9 +22,8 @@ genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 model = genai.GenerativeModel("gemini-2.0-flash")
 
-# 1. Title + Summary (Gemini output in Turkish)
 
-
+# 1. Başlık ve Özet Oluşturma
 def summarize_text(text):
     prompt = f"""
 You are an assistant that summarizes YouTube video transcripts.
@@ -42,7 +54,7 @@ Transcript:
     return title, summary
 
 
-# 2. Highlights
+# 2. Öne Çıkan Anlar
 def generate_highlights(transcript):
     prompt = f"""
 You are an assistant that finds key moments in a video transcript.
@@ -62,7 +74,7 @@ Transcript:
     return response.text.strip()
 
 
-# 3. Quiz (with Turkish output in JSON)
+# 3. Quiz Oluşturucu (JSON formatında)
 def generate_quiz(summary):
     prompt = f"""
 You are an assistant that creates quiz questions based on a Turkish summary.
@@ -105,7 +117,7 @@ Summary:
         return {"error": "Quiz JSON formatı hatalı", "raw": response.text}
 
 
-# 4. Lecture Notes
+# 4. Ders Notu Üretici
 def generate_lecture_notes(transcript):
     prompt = f"""
 You are a teaching assistant.
@@ -127,7 +139,7 @@ Transcript:
     return response.text.strip()
 
 
-# 5. Improve Summary with Feedback
+# 5. Özet Geliştirici (Kullanıcı Geri Bildirimine Göre)
 def improve_summary(summary, feedback_type):
     prompt = f"""
 You are an assistant that improves Turkish summaries based on user feedback.
@@ -144,4 +156,3 @@ Feedback Type: {feedback_type}
 """
     response = model.generate_content(prompt)
     return response.text.strip()
-
