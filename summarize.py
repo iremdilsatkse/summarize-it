@@ -73,15 +73,15 @@ Instructions:
 
 [
   {{
-    "question": "Soru metni",
+    "question": "Question text",
     "options": {{
-      "A": "Seçenek A",
-      "B": "Seçenek B",
-      "C": "Seçenek C",
-      "D": "Seçenek D"
+      "A": "Option A",
+      "B": "Option B",
+      "C": "Option C",
+      "D": "Option D"
     }},
     "correct_answer": "A",
-    "explanation": "Doğru cevabın açıklaması"
+    "explanation": "Explanation of the correct answer"
   }},
   ...
 ]
@@ -144,3 +144,4 @@ Feedback Type: {feedback_type}
 """
     response = model.generate_content(prompt)
     return response.text.strip()
+
