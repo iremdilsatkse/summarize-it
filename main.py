@@ -26,11 +26,16 @@ class FeedbackRequest(BaseModel):
 @app.post("/summarize")
 def summarize_video(data: VideoRequest):
     transcript = GetVideo.transcript(data.url)
+    title = GetVideo.get_title(data.url)
+    
     if not transcript:
         raise HTTPException(status_code=404, detail="Transcript not found")
 
     summary = summarize_text(transcript)
-    return {"summary": summary}
+    return {
+        "title": title,
+        "summary": summary
+    }
 
 
 @app.post("/highlights")
