@@ -1,3 +1,11 @@
+"""
+transcribe.py
+
+Bu modül, verilen bir YouTube video bağlantısından transkripti çeker. 
+Desteklenen diller: Türkçe ve İngilizce.
+Kullanıcıdan link alıp videoya ait yazılı metni döner.
+"""
+
 from youtube_transcript_api import YouTubeTranscriptApi
 import re
 
@@ -5,6 +13,9 @@ import re
 class GetVideo:
     @staticmethod
     def Id(link):
+        """
+        YouTube linkinden video ID'sini ayıklar.
+        """
         if "youtube.com" in link:
             pattern = r'youtube\.com/watch\?v=([a-zA-Z0-9_-]+)'
             match = re.search(pattern, link)
@@ -19,6 +30,9 @@ class GetVideo:
 
     @staticmethod
     def transcript(link):
+        """
+        Belirtilen YouTube linkinden videonun transkriptini çeker.
+        """
         video_id = GetVideo.Id(link)
         try:
             ytt_api = YouTubeTranscriptApi()

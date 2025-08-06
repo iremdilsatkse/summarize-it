@@ -1,3 +1,18 @@
+"""
+main.py
+
+Bu dosya, tüm modülleri bir araya getirerek bir FastAPI REST sunucusu kurar.
+
+API uç noktaları:
+- /summarize → Başlık ve özet üretir
+- /highlights → 5 önemli anı listeler
+- /quiz → Quiz üretir (JSON)
+- /lecture_notes → Ders notları döner
+- /improve_summary → Geri bildirimle özet geliştirir
+
+Her uç nokta YouTube linki alır ve Gemini modelini kullanarak çıktılar döner.
+"""
+
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from transcribe import GetVideo
@@ -12,10 +27,8 @@ import uvicorn
 
 app = FastAPI()
 
-
 class VideoRequest(BaseModel):
     url: str
-
 
 class FeedbackRequest(BaseModel):
     summary: str
@@ -24,6 +37,9 @@ class FeedbackRequest(BaseModel):
 
 @app.post("/summarize")
 def summarize_video(data: VideoRequest):
+    """
+    YouTube linkinden transkripti alır, başlık ve özet üretir.
+    """
     transcript = GetVideo.transcript(data.url)
 
     if not transcript:
@@ -38,6 +54,9 @@ def summarize_video(data: VideoRequest):
 
 @app.post("/highlights")
 def highlights(data: VideoRequest):
+    """
+    Transkript üzerinden önemli anları döner.
+    """
     transcript = GetVideo.transcript(data.url)
     if not transcript:
         raise HTTPException(status_code=404, detail="Transcript not found")
@@ -48,6 +67,9 @@ def highlights(data: VideoRequest):
 
 @app.post("/quiz")
 def quiz(data: VideoRequest):
+    """
+    Özet üzerinden quiz soruları üretir.
+    """
     transcript = GetVideo.transcript(data.url)
     if not transcript:
         raise HTTPException(status_code=404, detail="Transcript not found")
@@ -64,6 +86,9 @@ def quiz(data: VideoRequest):
 
 @app.post("/lecture_notes")
 def lecture_notes(data: VideoRequest):
+    """
+    Transkript üzerinden ders notları üretir.
+    """
     transcript = GetVideo.transcript(data.url)
     if not transcript:
         raise HTTPException(status_code=404, detail="Transcript not found")
@@ -74,6 +99,9 @@ def lecture_notes(data: VideoRequest):
 
 @app.post("/improve_summary")
 def improve(data: FeedbackRequest):
+    """
+    Kullanıcı geri bildirimine göre özeti geliştirir.
+    """
     improved = improve_summary(data.summary, data.feedback_type)
     return {"improved_summary": improved}
 
