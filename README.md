@@ -7,11 +7,13 @@ Flutter ile geliştirilen bu uygulama, FastAPI tabanlı bir backend'e bağlanara
 
 ## 🚀 Özellikler
 
-- 🔗 YouTube video linki ile özet alma
-- 🤖 Gemini AI ile içerik analizi ve kısa başlık üretimi
-- 📄 250 kelimeyi geçmeyen bilgilendirici Türkçe özet
-- 🧠 Özet üzerinden quiz ve ders notu üretme (isteğe bağlı)
-- 📱 Flutter arayüzüyle kullanıcı dostu mobil deneyim
+- 🔗 YouTube video linki ile otomatik özet alma
+- ✍️ Gemini AI ile içerik analizi ve Türkçe başlık + özet oluşturma
+- 📄 Oluşturulan özeti cihazınıza PDF olarak kaydedebilme
+- 🧠 Özet üzerinden quiz oluşturma ve çözüm geçmişi takibi
+- 🎓 Video içeriğini ders notu formatında görselleştirme
+- 📊 Quiz sonucunu gösterme ve tekrar çözüm opsiyonu
+- 📱 Flutter ile modern, sezgisel ve kullanıcı dostu arayüz
 
 ---
 
@@ -24,6 +26,30 @@ Flutter ile geliştirilen bu uygulama, FastAPI tabanlı bir backend'e bağlanara
 | 🧠 Yapay Zeka | Google Gemini (Generative AI) |
 | 🔠 NLP        | youtube-transcript-api        |
 | 🔒 Ortam      | python-dotenv                 |
+
+---
+
+## 📱 Uygulama Görselleri
+
+### Ana Ekran – Video Özetleme
+
+![Ana Ekran](assets/mainscreen.jpg)
+
+### Video Özetleme
+
+![Özet Oluşturma](assets/summarize.jpg)
+
+### Önemli Noktalar
+
+![Keypoints](assets/keypoints.jpg)
+
+### Quiz Listesi
+
+![Quizler](assets/quiz.jpg)
+
+### Ders Notu Oluşturma ve PDF Kaydetme
+
+![PDF Kaydet](assets/pdf.jpg)
 
 ---
 
