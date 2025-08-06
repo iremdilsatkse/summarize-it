@@ -124,3 +124,7 @@ Mobil uygulamanın kaynak kodlarına aşağıdaki bağlantıdan ulaşabilirsiniz
 🔗 [Flutter Arayüz Repo Linki](https://github.com/ozgurilter/summarize_it)
 
 > Bu repo, YouTube video özetleme, quiz görüntüleme, PDF kaydetme ve kullanıcı etkileşimleri gibi tüm arayüz işlemlerini içermektedir.
+
+## Uygulama videosu
+
+🔗 [Youtube Video Linki](https://youtube.com/shorts/0hpD9SlNDsI?si=qbjG73DX5zI8gitP)
