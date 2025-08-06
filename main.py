@@ -7,7 +7,7 @@ API uç noktaları:
 - /summarize → Başlık ve özet üretir
 - /highlights → 5 önemli anı listeler
 - /quiz → Quiz üretir (JSON)
-- /lecture_notes → PDF olarak kaydetme için notları döner
+- /lecture_notes → Ders notları döner
 - /improve_summary → Geri bildirimle özet geliştirir
 
 Her uç nokta YouTube linki alır ve Gemini modelini kullanarak çıktılar döner.
