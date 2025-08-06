@@ -1,5 +1,4 @@
-# main.py
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from transcribe import GetVideo
 from summarize import (
@@ -26,12 +25,11 @@ class FeedbackRequest(BaseModel):
 @app.post("/summarize")
 def summarize_video(data: VideoRequest):
     transcript = GetVideo.transcript(data.url)
-    title = GetVideo.get_title(data.url)
-    
+
     if not transcript:
         raise HTTPException(status_code=404, detail="Transcript not found")
 
-    summary = summarize_text(transcript)
+    title, summary = summarize_text(transcript)
     return {
         "title": title,
         "summary": summary
@@ -54,15 +52,14 @@ def quiz(data: VideoRequest):
     if not transcript:
         raise HTTPException(status_code=404, detail="Transcript not found")
 
-    summary = summarize_text(transcript)
+    title, summary = summarize_text(transcript)
     quiz_data = generate_quiz(summary)
 
-    # Eğer JSON parse edilememişse (hata varsa)
     if isinstance(quiz_data, dict) and "error" in quiz_data:
-        raise HTTPException(status_code=500, detail="Quiz formatı hatalı: " + quiz_data["error"])
+        raise HTTPException(
+            status_code=500, detail="Quiz formatı hatalı: " + quiz_data["error"])
 
     return {"quiz": quiz_data}
-
 
 
 @app.post("/lecture_notes")
@@ -74,15 +71,17 @@ def lecture_notes(data: VideoRequest):
     notes = generate_lecture_notes(transcript)
     return {"lecture_notes": notes}
 
+
 @app.post("/improve_summary")
 def improve(data: FeedbackRequest):
     improved = improve_summary(data.summary, data.feedback_type)
     return {"improved_summary": improved}
 
+
 @app.get("/")
 def root():
     return {"message": "API çalışıyor. Belgeler için /docs adresine gidin."}
 
-# Lokal test için:
+
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
