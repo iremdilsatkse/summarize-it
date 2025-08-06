@@ -9,36 +9,67 @@ genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 model = genai.GenerativeModel("gemini-2.0-flash")
 
-# 1. Temel özetleme
+# 1. Title + Summary (Gemini output in Turkish)
+
+
 def summarize_text(text):
     prompt = f"""
-Aşağıdaki video transkriptine göre, maksimum 250 kelimelik Türkçe bir özet oluştur. Yalnızca özet metni üret. Selamlama, açıklama veya sohbet dili kullanma.
+You are an assistant that summarizes YouTube video transcripts.
 
-Transkript:
+Instructions:
+- Generate a short and catchy title in **Turkish**, no more than 10 words.
+- Then generate a **summary in Turkish**, max 250 words.
+- Respond only in this format:
+
+Title: <Turkish title>
+Summary: <Turkish summary>
+
+Transcript:
 {text}
 """
     response = model.generate_content(prompt)
-    return response.text.strip()
+    result = response.text.strip()
+
+    try:
+        title = re.search(r"Title:\s*(.+)", result).group(1).strip()
+        summary = re.search(r"Summary:\s*(.+)", result,
+                            re.DOTALL).group(1).strip()
+    except Exception as e:
+        print("Başlık/özet ayrıştırılamadı:", e)
+        title = "Başlık çıkarılamadı"
+        summary = result
+
+    return title, summary
 
 
-# 2. Zaman Kodlu Önemli Noktalar (Highlights)
+# 2. Highlights
 def generate_highlights(transcript):
     prompt = f"""
-Aşağıdaki transkripti analiz et. En önemli 5 anı belirle. Her biri için zaman kodu ve kısa açıklama ver. Giriş cümlesi veya sohbet dili kullanma. Sadece çıktıyı aşağıdaki formatta ver:
+You are an assistant that finds key moments in a video transcript.
+
+Instructions:
+- Identify the 5 most important moments from the transcript.
+- For each, return a Turkish short description and approximate timestamp in this format:
 
 [00:MM:SS] Açıklama
 
-Transkript:
+Only provide the list. No intro or outro sentences.
+
+Transcript:
 {transcript}
 """
     response = model.generate_content(prompt)
     return response.text.strip()
 
 
-# 3. Quiz Soru-Cevap Oluşturma
+# 3. Quiz (with Turkish output in JSON)
 def generate_quiz(summary):
     prompt = f"""
-Aşağıdaki özet metnine göre 3 çoktan seçmeli soru üret. Her soru için aşağıdaki JSON formatını **yalnızca** kullan:
+You are an assistant that creates quiz questions based on a Turkish summary.
+
+Instructions:
+- Create 3 multiple choice questions in Turkish.
+- Return them **strictly** in the following JSON format:
 
 [
   {{
@@ -50,19 +81,18 @@ Aşağıdaki özet metnine göre 3 çoktan seçmeli soru üret. Her soru için a
       "D": "Seçenek D"
     }},
     "correct_answer": "A",
-    "explanation": "Neden doğru olduğunu açıkla."
+    "explanation": "Doğru cevabın açıklaması"
   }},
   ...
 ]
 
-**UYARI: Sadece geçerli JSON döndür. Açıklama, giriş veya başka bir şey ekleme.**
+Only return valid JSON. No greetings or extra text.
 
-Özet:
+Summary:
 {summary}
 """
     response = model.generate_content(prompt)
     text = response.text.strip()
-    # JSON array'i ayıkla
     match = re.search(r'(\[\s*{.*}\s*\])', text, re.DOTALL)
     if match:
         json_text = match.group(1)
@@ -75,54 +105,42 @@ Aşağıdaki özet metnine göre 3 çoktan seçmeli soru üret. Her soru için a
         return {"error": "Quiz JSON formatı hatalı", "raw": response.text}
 
 
-# 5. Ders Notu Formatında Özet
+# 4. Lecture Notes
 def generate_lecture_notes(transcript):
     prompt = f"""
-Aşağıdaki video transkriptini ders notu formatında özetle. Format şu şekilde olsun:
+You are a teaching assistant.
+
+Instructions:
+- Summarize the transcript in the form of Turkish lecture notes.
+- Use this structure:
 
 📌 Başlık  
-- Kısa açıklama  
-- İlgili maddeler (bullet list)
+- Açıklayıcı kısa cümle  
+- Bullet list of key points
 
-Sadece içerik üret, açıklayıcı cümle veya selamlamalar ekleme.
+Do not include anything else.
 
-Transkript:
+Transcript:
 {transcript}
 """
     response = model.generate_content(prompt)
     return response.text.strip()
 
 
-# 6. Kullanıcı Geri Bildirimiyle Geliştirilmiş Özet
+# 5. Improve Summary with Feedback
 def improve_summary(summary, feedback_type):
     prompt = f"""
-Aşağıdaki özeti, verilen geri bildirim doğrultusunda yeniden oluştur. Selamlama veya açıklayıcı metin kullanma. Sadece özet çıktısını ver.
+You are an assistant that improves Turkish summaries based on user feedback.
 
-Özgün Özet:
+Instructions:
+- Rewrite the given summary based on the feedback.
+- Keep it in Turkish.
+- Only return the new summary text.
+
+Original Summary:
 {summary}
 
-Geri Bildirim Türü: {feedback_type}
+Feedback Type: {feedback_type}
 """
     response = model.generate_content(prompt)
     return response.text.strip()
-
-
-# CLI test için:
-if __name__ == "__main__":
-    from transcribe import GetVideo
-    video_url = input("YouTube video linkini girin: ")
-    transcript = GetVideo.transcript(video_url)
-    if transcript:
-        summary = summarize_text(transcript)
-        print("\n📄 Özet:\n", summary)
-
-        print("\n⏱️ Önemli Noktalar:\n", generate_highlights(transcript))
-        print("\n🎓 Quiz:\n", generate_quiz(summary))
-        print("\n📚 Ders Notları:\n", generate_lecture_notes(transcript))
-
-        feedback = input(
-            "\nGeliştirme isteğiniz: [daha kısa / daha uzun / sade / detaylı]: ")
-        print("\n✨ Geliştirilmiş Özet:\n", improve_summary(summary, feedback))
-
-    else:
-        print("Transkript alınamadı.")
