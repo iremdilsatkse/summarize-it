@@ -31,25 +31,29 @@ Flutter ile geliştirilen bu uygulama, FastAPI tabanlı bir backend'e bağlanara
 
 ## 📱 Uygulama Görselleri
 
-### Ana Ekran – Video Özetleme
+<p align="center">
+  <img src="assets/mainscreen2.jpg" alt="Ana Ekran" width="200"/>
+  <img src="assets/summarize2.jpg" alt="Özet Oluşturma" width="200"/>
+  <img src="assets/keypoints2.jpg" alt="Önemli Noktalar" width="200"/>
+</p>
 
-![Ana Ekran](assets/mainscreen.jpg)
+<p align="center">
+  <b>Ana Ekran</b> &nbsp;&nbsp;&nbsp;&nbsp;
+  <b>Özet Oluşturma</b> &nbsp;&nbsp;&nbsp;&nbsp;
+  <b>Önemli Noktalar</b>
+</p>
 
-### Video Özetleme
+<br/>
 
-![Özet Oluşturma](assets/summarize.jpg)
+<p align="center">
+  <img src="assets/quiz2.jpg" alt="Quizler" width="200"/>
+  <img src="assets/pdf.jpg" alt="PDF Kaydet" width="200"/>
+</p>
 
-### Önemli Noktalar
-
-![Keypoints](assets/keypoints.jpg)
-
-### Quiz Listesi
-
-![Quizler](assets/quiz.jpg)
-
-### Ders Notu Oluşturma ve PDF Kaydetme
-
-![PDF Kaydet](assets/pdf.jpg)
+<p align="center">
+  <b>Quiz Listesi</b> &nbsp;&nbsp;&nbsp;&nbsp;
+  <b>PDF Kaydetme</b>
+</p>
 
 ---
 
@@ -109,3 +113,14 @@ GEMINI_API_KEY=your_gemini_api_key_here
    ```
 
    API dokümantasyonu: http://localhost:8000/docs
+
+   ***
+
+## 📱 Flutter Mobil Arayüz Kaynağı
+
+Uygulamanın kullanıcı arayüzü Flutter ile geliştirilmiştir.  
+Mobil uygulamanın kaynak kodlarına aşağıdaki bağlantıdan ulaşabilirsiniz:
+
+🔗 [Flutter Arayüz Repo Linki](https://github.com/ozgurilter/summarize_it)
+
+> Bu repo, YouTube video özetleme, quiz görüntüleme, PDF kaydetme ve kullanıcı etkileşimleri gibi tüm arayüz işlemlerini içermektedir.
